@@ -4,7 +4,7 @@ import mlflow
 import mlflow.sklearn
 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -68,15 +68,26 @@ X_train, X_test, y_train, y_test = train_test_split(
 # ==========================
 # Model Parameters
 # ==========================
-max_iter = 2000
+n_estimators = 100
+max_depth = 5
+
+model = RandomForestClassifier(
+    n_estimators=n_estimators,
+    max_depth=max_depth,
+    random_state=42
+)
 
 # ==========================
 # MLflow Run
 # ==========================
-with mlflow.start_run(run_name="Logistic Regression Baseline"):
+with mlflow.start_run(run_name="Random Forest Baseline"):
 
     # Model
-    model = LogisticRegression(max_iter=max_iter)
+    model = RandomForestClassifier(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        random_state=42
+    )
 
     # Train
     model.fit(X_train, y_train)
@@ -100,8 +111,9 @@ with mlflow.start_run(run_name="Logistic Regression Baseline"):
     print(confusion_matrix(y_test, y_pred))
 
     # Log parameters
-    mlflow.log_param("model", "LogisticRegression")
-    mlflow.log_param("max_iter", max_iter)
+    mlflow.log_param("model", "RandomForest")
+    mlflow.log_param("n_estimators", n_estimators)
+    mlflow.log_param("max_depth", max_depth)
     mlflow.log_param("test_size", 0.20)
     mlflow.log_param("random_state", 42)
     mlflow.log_param("encoding", "pd.get_dummies_drop_first")
