@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build Push and Deploy
 
 on:
   push:
@@ -24,3 +24,15 @@ jobs:
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/churn-app:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/churn-app:latest
+            docker stop churn-app || true
+            docker rm churn-app || true
+            docker run -d --name churn-app -p 8000:8000 -p 8501:8501 ${{ secrets.DOCKER_USERNAME }}/churn-app:latest
