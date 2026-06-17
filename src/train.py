@@ -52,6 +52,7 @@ df = pd.get_dummies(df, drop_first=True)
 # Features and Target
 # ==========================
 X = df.drop("Churn", axis=1)
+joblib.dump(X.columns.tolist(), "models/feature_columns.pkl")
 y = df["Churn"]
 
 # ==========================
@@ -135,3 +136,6 @@ with mlflow.start_run(run_name="Random Forest Baseline"):
 
     print("\nModel saved successfully.")
     print("MLflow run logged successfully.")
+
+print(X.shape)
+print(X.columns.tolist())
